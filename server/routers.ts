@@ -15,6 +15,7 @@ import {
   dismissActionItem,
   addNoteToActionItem,
   getImportantEmails,
+  getEmailsByCategory,
   getLastSync,
   updateBooking,
   insertBooking,
@@ -168,6 +169,12 @@ export const appRouter = router({
       .input(z.object({ limit: z.number().default(30) }).optional())
       .query(async ({ input }) => {
         return getImportantEmails(input?.limit ?? 30);
+      }),
+
+    emailsByCategory: ownerProcedure
+      .input(z.object({ category: z.enum(["jobs", "other"]), limit: z.number().default(30) }))
+      .query(async ({ input }) => {
+        return getEmailsByCategory(input.category, input.limit);
       }),
 
     lastSync: ownerProcedure.query(async () => {

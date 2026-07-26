@@ -91,6 +91,8 @@ export const emailCache = mysqlTable("email_cache", {
   isTravel: boolean("isTravel").default(false).notNull(),
   isImportant: boolean("isImportant").default(false).notNull(),
   isStarred: boolean("isStarred").default(false).notNull(),
+  // Category for inbox grouping: 'jobs' | 'other'
+  emailCategory: varchar("emailCategory", { length: 32 }).default("other").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 

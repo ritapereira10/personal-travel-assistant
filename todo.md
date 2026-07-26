@@ -37,3 +37,11 @@
 ## Gaps to Resolve
 - [x] Add non-owner FORBIDDEN test to travel.test.ts
 - [x] Tighten owner guard to OWNER_OPEN_ID only (admin role alone is not sufficient)
+
+## Update: Transportation focus + Inbox categories
+- [x] Remove hotel/accommodation missing bookings and action items from DB
+- [x] Remove accommodation from missing-booking logic in gmailSync.ts
+- [x] Add emailCategory field (jobs, other) to email_cache table
+- [x] Update Gmail sync to classify job-related emails vs other important
+- [x] Split Inbox page into Jobs and Other Important sections
+- [x] Update action items to only flag missing transportation (flights, trains)

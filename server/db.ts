@@ -203,8 +203,27 @@ export async function upsertEmailCache(email: InsertEmailCache) {
         isImportant: email.isImportant,
         isStarred: email.isStarred,
         isTravel: email.isTravel,
+        emailCategory: email.emailCategory,
       },
     });
+}
+
+// Returns non-travel important emails filtered by category ('jobs' | 'other')
+export async function getEmailsByCategory(category: string, limit = 30) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select()
+    .from(emailCache)
+    .where(
+      and(
+        eq(emailCache.isImportant, true),
+        eq(emailCache.isTravel, false),
+        eq(emailCache.emailCategory, category)
+      )
+    )
+    .orderBy(desc(emailCache.dateReceived))
+    .limit(limit);
 }
 
 // ── Sync Log ───────────────────────────────────────────────────────────────
