@@ -8,6 +8,8 @@ import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
+import { runGmailSync } from "../gmailSync";
+import { ensureGmailSyncHeartbeat } from "../setupHeartbeat";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -36,6 +38,17 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   registerStorageProxy(app);
   registerOAuthRoutes(app);
+
+  // Scheduled Gmail sync endpoint (called by Heartbeat)
+  app.post("/api/scheduled/gmail-sync", async (_req, res) => {
+    try {
+      const result = await runGmailSync();
+      res.json({ ok: true, ...result });
+    } catch (err: any) {
+      console.error("[Scheduled] Gmail sync error:", err);
+      res.status(500).json({ ok: false, error: err?.message ?? "Unknown error" });
+    }
+  });
   // tRPC API
   app.use(
     "/api/trpc",
@@ -60,6 +73,8 @@ async function startServer() {
 
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
+    // Register periodic Gmail sync Heartbeat job (idempotent)
+    ensureGmailSyncHeartbeat().catch(() => {});
   });
 }
 
