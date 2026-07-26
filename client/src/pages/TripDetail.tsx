@@ -19,6 +19,7 @@ import {
 } from "@/components/TravelUI";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useAuthEnabled } from "@/hooks/useOwnerQuery";
 
 interface TripDetailProps {
   id: number;
@@ -28,8 +29,9 @@ export default function TripDetail({ id }: TripDetailProps) {
   const [, navigate] = useLocation();
   const [noteBookingId, setNoteBookingId] = useState<number | null>(null);
   const [noteText, setNoteText] = useState("");
+  const { enabled } = useAuthEnabled();
 
-  const { data, isLoading, refetch } = trpc.trips.byId.useQuery({ id });
+  const { data, isLoading, refetch } = trpc.trips.byId.useQuery({ id }, { enabled });
 
   const updateNotesMutation = trpc.bookings.updateNotes.useMutation({
     onSuccess: () => {

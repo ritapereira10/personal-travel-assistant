@@ -2,6 +2,7 @@ import { trpc } from "@/lib/trpc";
 import { Mail, RefreshCw, Inbox, Briefcase } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useAuthEnabled } from "@/hooks/useOwnerQuery";
 
 // ── Shared helpers ─────────────────────────────────────────────────────────
 
@@ -134,14 +135,15 @@ function EmailSection({
 
 export default function EmailFeed() {
   const [syncing, setSyncing] = useState(false);
+  const { enabled } = useAuthEnabled();
 
   const { data: jobEmails, isLoading: jobsLoading, refetch: refetchJobs } =
-    trpc.gmail.emailsByCategory.useQuery({ category: "jobs", limit: 40 });
+    trpc.gmail.emailsByCategory.useQuery({ category: "jobs", limit: 40 }, { enabled });
 
   const { data: otherEmails, isLoading: otherLoading, refetch: refetchOther } =
-    trpc.gmail.emailsByCategory.useQuery({ category: "other", limit: 40 });
+    trpc.gmail.emailsByCategory.useQuery({ category: "other", limit: 40 }, { enabled });
 
-  const { data: lastSync } = trpc.gmail.lastSync.useQuery();
+  const { data: lastSync } = trpc.gmail.lastSync.useQuery(undefined, { enabled });
 
   const syncMutation = trpc.gmail.sync.useMutation({
     onSuccess: (result) => {

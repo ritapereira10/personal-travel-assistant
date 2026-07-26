@@ -12,9 +12,12 @@ import {
   StatusBadge,
 } from "@/components/TravelUI";
 
+import { useAuthEnabled } from "@/hooks/useOwnerQuery";
+
 export default function PastTrips() {
   const [, navigate] = useLocation();
-  const { data: trips, isLoading } = trpc.trips.past.useQuery();
+  const { enabled } = useAuthEnabled();
+  const { data: trips, isLoading } = trpc.trips.past.useQuery(undefined, { enabled });
 
   return (
     <div className="px-8 py-8 max-w-4xl">
